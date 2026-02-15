@@ -1,176 +1,183 @@
-🧠 Brain Tumor Segmentation using ResNet-UNet
-📌 Project Overview
+# 🧠 Brain Tumor Segmentation using ResNet-UNet
 
-This project implements a deep learning model for automatic brain tumor segmentation from MRI scans using a UNet architecture with a pretrained ResNet34 encoder.
+## 📌 Project Overview
 
-The objective is to accurately segment tumor regions at the pixel level using overlap-based loss functions and evaluation metrics.
+This project implements a deep learning–based framework for automatic brain tumor segmentation from MRI scans using a **UNet architecture with a pretrained ResNet34 encoder**.
 
-🎯 Problem Statement
+The objective is to perform accurate **pixel-level tumor segmentation** while effectively handling severe class imbalance using overlap-based loss functions and robust evaluation metrics.
 
-Brain tumor segmentation is a critical task in medical imaging. The challenge lies in:
+---
 
-Severe class imbalance (small tumor vs large background)
+## 🎯 Problem Statement
 
-Precise boundary localization
+Brain tumor segmentation is a critical task in medical image analysis, assisting in diagnosis, treatment planning, and disease monitoring.
 
-Avoiding false negatives (missing tumor regions)
+However, it presents significant challenges:
 
-Traditional metrics like accuracy are misleading due to imbalance. Therefore, this project focuses on Dice, IoU, and Sensitivity metrics.
+- Severe **class imbalance** (small tumor region vs large background)
+- Requirement of **precise boundary localization**
+- Avoiding **false negatives** (missing tumor pixels)
 
-🏗 Model Architecture
-🔹 Base Architecture:
+Traditional metrics like accuracy are misleading in such scenarios because background pixels dominate the image. Therefore, this project focuses on **Dice Score, IoU, and Sensitivity** for evaluation.
 
-UNet (Encoder-Decoder structure)
+---
 
-🔹 Encoder:
+## 🏗 Model Architecture
 
-ResNet34 (Pretrained on ImageNet)
+### 🔹 Base Architecture
+- **UNet (Encoder–Decoder Structure)**
+  - Encoder extracts hierarchical features
+  - Decoder reconstructs spatial resolution
+  - Skip connections preserve fine-grained spatial details
 
-🔹 Why ResNet Encoder?
+### 🔹 Encoder
+- **ResNet34 (Pretrained on ImageNet)**
 
-Strong low-level feature extraction
+### 🔹 Why Use a Pretrained ResNet Encoder?
+- Strong low-level feature extraction
+- Faster convergence
+- Improved generalization
+- Reduced training instability
+- Better optimization on limited medical datasets
 
-Faster convergence
+### 🔹 Output
+- Binary segmentation mask (Tumor vs Background)
+- Pixel-wise probability map
 
-Better generalization
+---
 
-Reduced training time
+## 🧪 Loss Functions Explored
 
-🔹 Output:
+To handle class imbalance and optimize region overlap, multiple loss configurations were experimented with:
 
-Binary segmentation mask (Tumor vs Background)
+### 1️⃣ BCE + Dice Loss
+- Combines pixel-wise stability (BCE) with overlap optimization (Dice)
 
-🧪 Loss Functions Explored
+### 2️⃣ Dice + Focal Loss
+- Dice optimizes overlap
+- Focal reduces dominance of easy background pixels
 
-The training process involved experimentation with multiple loss combinations:
+### 3️⃣ BCE + Dice + Focal (Weighted Combined Loss)
+- Balances:
+  - Stability (BCE)
+  - Overlap accuracy (Dice)
+  - Hard-pixel emphasis (Focal)
 
-1️⃣ BCE + Dice Loss
+Ablation experiments were conducted to compare performance across configurations.
 
-Baseline configuration.
+---
 
-2️⃣ Dice + Focal Loss
+## 📊 Evaluation Metrics
 
-To handle class imbalance and hard pixels.
+Due to heavy class imbalance, the following metrics were used:
 
-3️⃣ BCE + Dice + Focal (Combined Loss)
+- **Dice Score (Primary Metric)**
+- **IoU (Intersection over Union)**
+- **Sensitivity (Recall)**
 
-Weighted combination to balance stability and overlap optimization.
+Accuracy was intentionally excluded as it is dominated by background pixels and does not reflect segmentation quality.
 
-📊 Evaluation Metrics
+---
 
-Since segmentation suffers from heavy class imbalance, the following metrics were used:
+## 🚀 Training Details
 
-Dice Score (Primary metric)
+- **Framework:** PyTorch  
+- **Model Library:** segmentation_models_pytorch  
+- **Optimizer:** Adam  
+- **Learning Rate Scheduler:** ReduceLROnPlateau  
+- **Epochs:** 20–25  
+- **Hardware:** Google Colab (CUDA GPU acceleration)  
+- **Checkpointing:** Best model saved based on validation Dice score  
+- **Early Stopping:** Applied to prevent overfitting  
 
-IoU (Intersection over Union)
+---
 
-Sensitivity (Recall)
+## 📈 Performance Results (Best Model)
 
-Accuracy was not used as it is dominated by background pixels.
+| Metric        | Test Score |
+|--------------|------------|
+| Dice Score   | 0.74       |
+| IoU Score    | 0.61       |
+| Sensitivity  | 0.72       |
 
-🚀 Training Details
+These results demonstrate:
 
-Framework: PyTorch
+- Strong spatial overlap performance
+- Good tumor detection capability
+- Effective handling of class imbalance
 
-Model Library: segmentation_models_pytorch
+---
 
-Optimizer: Adam
+## 🔬 Tuning Journey
 
-Scheduler: ReduceLROnPlateau
+### Step 1: Baseline UNet
+- Moderate performance
+- Slower convergence
 
-Epochs: 20–25
+### Step 2: ResNet34 Pretrained Encoder
+- Significant Dice improvement
+- Faster convergence
+- Better generalization
 
-GPU: Google Colab CUDA
+### Step 3: Loss Function Tuning
+- Introduced Dice Loss for overlap optimization
+- Added Focal Loss for imbalance handling
+- Conducted structured ablation experiments
 
-📈 Performance Results (Best Model)
-Metric	Test Score
-Dice Score	0.74
-IoU Score	0.61
-Sensitivity	0.72
+### Step 4: Threshold Tuning & Validation Monitoring
+- Learning rate scheduling applied
+- Early stopping implemented
+- Best checkpoint selected using validation Dice
 
-These results demonstrate strong overlap accuracy and good tumor detection capability.
+---
 
-🔬 Tuning Journey
-Step 1: Baseline UNet
+## 📊 Visualizations Included
 
-Moderate performance
+- Training vs Validation Loss curves
+- Dice Score progression
+- Random sample predictions
+- Ground truth vs predicted mask comparisons
+- Overlayed tumor mask visualizations
 
-Slower convergence
+---
 
-Step 2: ResNet34 Pretrained Encoder
+## 🛠 Tools & Libraries Used
 
-Significant Dice improvement
+- PyTorch
+- segmentation_models_pytorch
+- NumPy
+- Matplotlib
+- Seaborn
+- OpenCV
+- Torchinfo
+- tqdm
 
-Faster convergence
+---
 
-Better generalization
+## 🧠 Key Learnings
 
-Step 3: Loss Function Tuning
+- Accuracy is misleading in imbalanced medical segmentation tasks
+- Dice and IoU are more reliable overlap metrics
+- Pretrained encoders significantly boost performance
+- Focal loss effectiveness is dataset-dependent
+- Proper checkpointing prevents performance regression
+- Monitoring validation Dice is critical for stability
 
-Introduced Dice Loss for overlap optimization
+---
 
-Added Focal Loss for class imbalance
+## 📌 Future Improvements
 
-Conducted ablation experiments
+- Test-Time Augmentation (TTA)
+- Boundary-aware loss functions
+- Multi-class tumor segmentation
+- K-fold cross-validation
+- Small tumor performance analysis
+- 3D volumetric segmentation
 
-Step 4: Threshold Tuning & Validation Monitoring
+---
 
-Early stopping applied
+## 🧾 Conclusion
 
-Learning rate scheduler used
+A ResNet-UNet–based segmentation framework was successfully implemented for brain tumor MRI segmentation.
 
-Best checkpoint saved based on validation Dice
-
-📊 Visualization
-
-The project includes:
-
-Training vs Validation Loss Curves
-
-Dice Curve Analysis
-
-Sample Prediction Visualizations
-
-Overlayed Tumor Masks
-
-🛠 Tools & Libraries Used
-
-PyTorch
-
-segmentation_models_pytorch
-
-NumPy
-
-Matplotlib
-
-Seaborn
-
-OpenCV
-
-Torchinfo
-
-tqdm
-
-🧠 Key Learnings
-
-Accuracy is misleading in imbalanced medical segmentation
-
-Dice and IoU are more reliable evaluation metrics
-
-Pretrained encoders significantly boost performance
-
-Focal loss is dataset-dependent
-
-Proper checkpointing prevents performance regression
-
-📌 Future Improvements
-
-Test-Time Augmentation (TTA)
-
-Boundary-aware loss
-
-Multi-class tumor segmentation
-
-Cross-validation
-
-Small tumor performance analysis
+The final model achieved a **Dice Score of 0.74** on unseen test data, demonstrating robust overlap optimization, strong generalization, and effective handling of class imbalance.
