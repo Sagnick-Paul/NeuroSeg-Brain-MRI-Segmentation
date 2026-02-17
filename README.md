@@ -96,9 +96,9 @@ Accuracy was intentionally excluded as it is dominated by background pixels and 
 
 | Metric        | Test Score |
 |--------------|------------|
-| Dice Score   | 0.74       |
-| IoU Score    | 0.61       |
-| Sensitivity  | 0.72       |
+| Dice Score   | 0.78       |
+| IoU Score    | 0.69       |
+| Sensitivity  | 0.79       |
 
 These results demonstrate:
 
