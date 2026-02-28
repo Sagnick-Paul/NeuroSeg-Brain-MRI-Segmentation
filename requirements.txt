@@ -1,7 +1,16 @@
+<<<<<<< HEAD
 streamlit
 torch
 torchvision
 numpy
 opencv-python
 Pillow
+=======
+streamlit
+torch
+torchvision
+numpy
+opencv-python-headless
+Pillow
+>>>>>>> 04dbfb0 (Requirements.txt)
 matplotlib
