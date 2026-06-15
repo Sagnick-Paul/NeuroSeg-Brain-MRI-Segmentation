@@ -1,5 +1,5 @@
-https://download.pytorch.org/whl/cpu/torch-2.2.1%2Bcpu-cp310-cp310-linux_x86_64.whl
-https://download.pytorch.org/whl/cpu/torchvision-0.17.1%2Bcpu-cp310-cp310-linux_x86_64.whl
+torch>=2.2.0
+torchvision>=0.15.0
 fastapi
 uvicorn
 pydantic
