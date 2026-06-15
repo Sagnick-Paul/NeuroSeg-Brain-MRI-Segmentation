@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroSeg AI - Brain Tumor Segmentation</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- HEADER -->
+        <header class="app-header">
+            <div class="logo-area">
+                <i data-lucide="brain-circuit" class="logo-icon animate-pulse"></i>
+                <div class="logo-text">
+                    <h1>NEUROSEG AI</h1>
+                    <span>Advanced Brain Tumor Segmentation</span>
+                </div>
+            </div>
+            <div class="status-indicator">
+                <span class="status-dot green"></span>
+                <span class="status-text" id="system-status">System Ready</span>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="app-content">
+            <!-- SIDEBAR CONTROLS -->
+            <aside class="sidebar">
+                <!-- UPLOAD CARD -->
+                <div class="card glass">
+                    <div class="card-header">
+                        <i data-lucide="upload-cloud"></i>
+                        <h2>MRI File Upload</h2>
+                    </div>
+                    <div class="card-body">
+                        <!-- MRI Upload Zone -->
+                        <div class="upload-zone" id="mri-upload-zone">
+                            <input type="file" id="mri-file-input" accept=".png,.jpg,.jpeg,.tif,.tiff" class="hidden-input">
+                            <i data-lucide="image" class="upload-icon"></i>
+                            <p class="upload-text">Drag & Drop MRI Image</p>
+                            <span class="upload-sub">Supports PNG, JPG, TIF</span>
+                            <span class="file-name-display" id="mri-filename"></span>
+                        </div>
+
+                        <!-- GT Upload Zone -->
+                        <div class="upload-zone secondary" id="gt-upload-zone">
+                            <input type="file" id="gt-file-input" accept=".tif,.tiff" class="hidden-input">
+                            <i data-lucide="file-check" class="upload-icon"></i>
+                            <p class="upload-text">Optional: Ground Truth (GT) Mask</p>
+                            <span class="upload-sub">Supports TIF / TIFF</span>
+                            <span class="file-name-display" id="gt-filename"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTROLS CARD -->
+                <div class="card glass">
+                    <div class="card-header">
+                        <i data-lucide="sliders"></i>
+                        <h2>Segmentation Controls</h2>
+                    </div>
+                    <div class="card-body">
+                        <!-- Threshold Slider -->
+                        <div class="control-group">
+                            <div class="control-label">
+                                <span>Segmentation Threshold</span>
+                                <span class="control-value" id="threshold-val">0.50</span>
+                            </div>
+                            <input type="range" id="threshold-slider" min="0.1" max="0.9" step="0.05" value="0.5">
+                        </div>
+
+                        <!-- Opacity Slider -->
+                        <div class="control-group">
+                            <div class="control-label">
+                                <span>Overlay Transparency</span>
+                                <span class="control-value" id="opacity-val">0.50</span>
+                            </div>
+                            <input type="range" id="opacity-slider" min="0.1" max="1.0" step="0.1" value="0.5">
+                        </div>
+
+                        <!-- GradCAM Toggle -->
+                        <div class="toggle-group">
+                            <div class="toggle-info">
+                                <span>Enable Grad-CAM</span>
+                                <span class="toggle-sub">Explainable Attention Map</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="gradcam-toggle" checked>
+                                <span class="slider-round"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODEL DETAILS CARD -->
+                <div class="card glass metadata-card">
+                    <div class="card-header">
+                        <i data-lucide="info"></i>
+                        <h2>Model Specifications</h2>
+                    </div>
+                    <div class="card-body grid-2">
+                        <div class="meta-item">
+                            <span class="meta-label">Architecture</span>
+                            <span class="meta-val">UNet</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Backbone</span>
+                            <span class="meta-val">EfficientNet-B3</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Resolution</span>
+                            <span class="meta-val">384 &times; 384</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Device</span>
+                            <span class="meta-val" id="device-type">CPU</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- DASHBOARD SECTION -->
+            <section class="dashboard">
+                <!-- STATS GRID -->
+                <div class="stats-grid">
+                    <div class="stat-card glass border-blue">
+                        <div class="stat-icon-wrapper blue">
+                            <i data-lucide="activity"></i>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-label">Tumor Area</span>
+                            <h3 class="stat-value" id="stat-area">-</h3>
+                            <span class="stat-sub">pixels</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card glass border-indigo">
+                        <div class="stat-icon-wrapper indigo">
+                            <i data-lucide="pie-chart"></i>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-label">Brain Occupancy</span>
+                            <h3 class="stat-value" id="stat-percentage">-</h3>
+                            <span class="stat-sub">% of slice</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card glass border-purple">
+                        <div class="stat-icon-wrapper purple">
+                            <i data-lucide="gauge"></i>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-label">Prediction Confidence</span>
+                            <h3 class="stat-value" id="stat-confidence">-</h3>
+                            <span class="stat-sub">mean probability</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card glass border-emerald">
+                        <div class="stat-icon-wrapper emerald">
+                            <i data-lucide="crosshair"></i>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-label">Dice Score</span>
+                            <h3 class="stat-value" id="stat-dice">-</h3>
+                            <span class="stat-sub">similarity (GT)</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card glass border-teal">
+                        <div class="stat-icon-wrapper teal">
+                            <i data-lucide="intersect"></i>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-label">IoU Score</span>
+                            <h3 class="stat-value" id="stat-iou">-</h3>
+                            <span class="stat-sub">Jaccard Index</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card glass border-orange">
+                        <div class="stat-icon-wrapper orange">
+                            <i data-lucide="shield-alert"></i>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-label">Sensitivity</span>
+                            <h3 class="stat-value" id="stat-sensitivity">-</h3>
+                            <span class="stat-sub">recall score</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABS CONTAINER -->
+                <div class="tabs-container glass">
+                    <div class="tabs-header">
+                        <div class="tab-buttons">
+                            <button class="tab-btn active" data-tab="segmentation">
+                                <i data-lucide="scan-face"></i>
+                                <span>Segmentation</span>
+                            </button>
+                            <button class="tab-btn" data-tab="explainability">
+                                <i data-lucide="flame"></i>
+                                <span>Grad-CAM Explainability</span>
+                            </button>
+                            <button class="tab-btn" data-tab="compare-slider">
+                                <i data-lucide="split"></i>
+                                <span>Interactive Split-Viewer</span>
+                            </button>
+                        </div>
+                        <button class="action-btn" id="download-btn" disabled>
+                            <i data-lucide="download"></i>
+                            <span>Download Overlay</span>
+                        </button>
+                    </div>
+
+                    <div class="tabs-content">
+                        <!-- SEGMENTATION TAB -->
+                        <div class="tab-pane active" id="tab-segmentation">
+                            <div class="viewer-grid">
+                                <div class="viewer-box">
+                                    <div class="viewer-header">Original MRI Input</div>
+                                    <div class="viewer-body">
+                                        <img id="img-original" src="" alt="Please upload an MRI slice" class="viewer-img placeholder">
+                                        <div class="no-data-msg">
+                                            <i data-lucide="image" class="pulse-scale"></i>
+                                            <p>Awaiting MRI Image Upload</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="viewer-box">
+                                    <div class="viewer-header">Segmented Tumor Overlay</div>
+                                    <div class="viewer-body">
+                                        <img id="img-overlay" src="" alt="Segmentation results overlay" class="viewer-img placeholder">
+                                        <div class="no-data-msg">
+                                            <i data-lucide="brain" class="pulse-scale"></i>
+                                            <p>Awaiting Segmentation Output</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- EXPLAINABILITY TAB -->
+                        <div class="tab-pane" id="tab-explainability">
+                            <div class="viewer-grid">
+                                <div class="viewer-box">
+                                    <div class="viewer-header">Attention Heatmap (Grad-CAM)</div>
+                                    <div class="viewer-body">
+                                        <img id="img-gradcam" src="" alt="Grad-CAM visualization" class="viewer-img placeholder">
+                                        <div class="no-data-msg">
+                                            <i data-lucide="flame" class="pulse-scale"></i>
+                                            <p>Awaiting Explainability Generation</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="viewer-box">
+                                    <div class="viewer-header">MRI Base Reference</div>
+                                    <div class="viewer-body">
+                                        <img id="img-ref-mri" src="" alt="Original MRI reference" class="viewer-img placeholder">
+                                        <div class="no-data-msg">
+                                            <i data-lucide="image" class="pulse-scale"></i>
+                                            <p>Awaiting MRI Image Upload</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- COMPARISON SLIDER TAB -->
+                        <div class="tab-pane" id="tab-compare-slider">
+                            <div class="slider-viewer-box">
+                                <div class="slider-comparison-container" id="slider-comp-container">
+                                    <!-- Image 1: Original MRI (Bottom) -->
+                                    <img id="slider-img-original" src="" alt="Original MRI" class="slider-img">
+                                    
+                                    <!-- Image 2: Overlay (Top, Resized by Clip-path) -->
+                                    <div class="slider-overlay-wrapper" id="slider-overlay-wrapper">
+                                        <img id="slider-img-overlay" src="" alt="Overlay" class="slider-img">
+                                    </div>
+                                    
+                                    <!-- Slider Bar & Handle -->
+                                    <div class="slider-divider" id="slider-divider">
+                                        <div class="slider-handle">
+                                            <i data-lucide="chevrons-left-right"></i>
+                                        </div>
+                                    </div>
+
+                                    <div class="slider-no-data-msg">
+                                        <i data-lucide="split" class="pulse-scale"></i>
+                                        <p>Upload files to activate interactive slider comparison</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LOADING OVERLAY -->
+                <div class="loading-overlay" id="loading-spinner">
+                    <div class="loader-container">
+                        <div class="pulse-loader"></div>
+                        <p class="loader-text">Analyzing MRI & Segmenting Tumor...</p>
+                        <span class="loader-sub">Running deep network model pipeline (EfficientNet-B3 + UNet)</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="app-footer">
+            <p>&copy; 2026 NeuroSeg AI Systems. For research and experimental use only. Not for diagnostic use.</p>
+            <div class="footer-stats">
+                <span>Inference Engine: PyTorch</span>
+                <span class="divider">|</span>
+                <span>Inference Time: <span id="inference-time-val">-</span> ms</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/script.js"></script>
+    <script>
+        // Initialize Lucide icons on page load
+        lucide.createIcons();
+    </script>
+</body>
+</html>

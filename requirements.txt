@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+pydantic
+numpy
+opencv-python-headless
+torch
+segmentation-models-pytorch
+torchinfo
+albumentations
+pandas
+scikit-learn
+pillow
