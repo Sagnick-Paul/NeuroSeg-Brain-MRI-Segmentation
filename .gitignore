@@ -1,8 +1,0 @@
-venv/
-__pycache__/
-*.pyc
-__pycache__/
-*.pth
-.ipynb_checkpoints/
-.env
-.vscode/
