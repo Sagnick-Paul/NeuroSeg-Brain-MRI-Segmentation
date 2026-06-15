@@ -16,7 +16,7 @@ app.log
 *.pth
 *.pt
 *.ckpt
-backend/model/
+backend/model/  
 backend\model\
 
 # Virtual environments (if you create one later)
