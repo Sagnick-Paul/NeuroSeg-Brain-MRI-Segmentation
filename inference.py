@@ -137,7 +137,7 @@ def ensure_weights_exist():
         
     if not os.path.exists(WEIGHTS_PATH):
         # !! REPLACE WITH YOUR ACTUAL GITHUB USERNAME AND REPO NAME LATER !!
-        DOWNLOAD_URL = "https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME/releases/download/v1.0.0/tumour_model_v1.pth"
+        DOWNLOAD_URL = "https://github.com/Sagnick-Paul/NeuroSeg-Brain-MRI-Segmentation/releases/download/v1.0.0/tumour_model_v1.pth"
         print(f"Downloading model weights to {WEIGHTS_PATH}...")
         try:
             opener = urllib.request.build_opener()

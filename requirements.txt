@@ -1,12 +1,10 @@
+--find-links https://download.pytorch.org/whl/cpu/torch_stable.html
+torch==2.2.1+cpu
+torchvision==0.17.1+cpu
 fastapi
 uvicorn
 pydantic
 numpy
 opencv-python-headless
-torch
 segmentation-models-pytorch
-torchinfo
-albumentations
-pandas
-scikit-learn
 pillow
